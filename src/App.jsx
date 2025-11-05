@@ -2,8 +2,8 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Router } from "react-router-dom";
 
 import Navbar from "./componets/Navbar";
+import ScrollToTop from "./pages/ScrollToTop";
 
-import ScrollToTop from "./pages/Scrolletotop";
 
 
 import Home from "./pages/Home";
@@ -35,6 +35,8 @@ import Sap from "./servicespage/Sap";
 import Floatingactionbutton from "./componets/Footingactionbutton";
 import Footer from "./componets/Footer";
 
+
+
 function App() {
 
   return (
@@ -42,7 +44,7 @@ function App() {
       <div className="min-h-screen ">
         <Navbar />
         <main className="">
-          <ScrollToTop></ScrollToTop>
+      <ScrollToTop></ScrollToTop>
 
           <Routes>
             <Route path="/" element={<Home />} />
