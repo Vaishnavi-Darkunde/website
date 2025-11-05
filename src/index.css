@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@media print {
+  nav, footer {
+    display: block !important;
+    position: static !important; /* removes fixed positioning */
+    box-shadow: none !important;
+  }
+
+  button, .print:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+}
+
+
