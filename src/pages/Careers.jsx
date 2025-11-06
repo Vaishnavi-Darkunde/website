@@ -1,9 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { div } from "framer-motion/client";
-
-// ✅ Combined Job Data
+ 
 const JOBS = [
   {
     id: "1",
@@ -117,152 +115,146 @@ const JOBS = [
     tags: ["Java", "Python", "Selenium", "API Automation", "Appium", "Postman"],
   },
 ];
-
+ 
 export default function Careers() {
   const [filters, setFilters] = useState({
     fresher: false,
     internship: false,
     fulltime: false,
   });
-  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
-
+ 
   const toggleFilter = (key) => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-
-  // ✅ Filtering Logic
+ 
+  // ✅ Filter + Search Logic
   const filtered = useMemo(() => {
-    return JOBS.filter((job) => {
-      // Sidebar filters
-      if (filters.fresher && job.exp !== "0 to 1 Year") return false;
-      if (filters.internship && job.type !== "Internship") return false;
-      if (filters.fulltime && job.type !== "Full-time") return false;
-
-      // Search filter
-      const text = [job.title, job.location, job.skills, job.tags.join(" ")].join(" ").toLowerCase();
-      if (!text.includes(query.toLowerCase())) return false;
-
+    return JOBS.filter((j) => {
+      if (filters.fresher && j.exp !== "0 to 1 Year") return false;
+      if (filters.internship && j.type !== "Internship") return false;
+      if (filters.fulltime && j.type !== "Full-time") return false;
+ 
+      if (search) {
+        const query = search.toLowerCase();
+        const matchesTitle = j.title.toLowerCase().includes(query);
+        const matchesSkills = j.skills.toLowerCase().includes(query);
+        const matchesTeam = j.team.toLowerCase().includes(query);
+        if (!matchesTitle && !matchesSkills && !matchesTeam) return false;
+      }
+ 
       return true;
     });
-  }, [filters, query]);
-
+  }, [filters, search]);
+ 
   return (
-    <div className="pt-10">
+    <div className="pt-15">
       {/* Header */}
-      <header className="bg-gradient-to-r from-sky-500 to-indigo-900 text-white py-15 px-8 shadow-md text-center">
+      <header className="bg-gradient-to-r from-sky-500 to-indigo-900 text-white py-8 px-8 shadow-md">
         <h1 className="text-3xl font-bold">Are you looking for a Dream Job?</h1>
-        <p className="mt-2 text-md">Browse & apply for opportunities at GTasterix</p>
+        <p className="mt-2 text-sm">Browse & apply for opportunities at GTasterix</p>
       </header>
-
-
-
-
-
-{/* Layout */}
-     <div className="max-w-10x1 mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Sidebar Filters */}
-        <aside className="bg-white rounded-xl shadow p-4 h-[80vh] overflow-y-auto sticky top-6">
-          <h2 className="font-semibold text-lg mb-4">Filter Jobs</h2>
-           <div className="space-y-3">
-             {[
+ 
+      {/* Main Section */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* 🔍 Search + Filters Horizontal */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search jobs by title, skills, or team..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 border rounded-lg p-3 shadow-sm w-full"
+          />
+ 
+          {/* Filters Horizontal */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {[
               { label: "Freshers (0-1)", key: "fresher" },
               { label: "Internship", key: "internship" },
               { label: "Full Time", key: "fulltime" },
-            ].map((item, idx) => (
-              <label key={idx} className="flex justify-between items-center py-2 border-b cursor-pointer">
-                 {item.label}
-                 <input
-                   type="checkbox"
+            ].map((item) => (
+              <label
+                key={item.key}
+                className="flex items-center gap-2 cursor-pointer bg-white border rounded-lg px-4 py-2 shadow-sm hover:shadow-md transition"
+              >
+                <input
+                  type="checkbox"
                   checked={filters[item.key]}
                   onChange={() => toggleFilter(item.key)}
-                  className="ml-2"
-                 />
-             </label>
-             ))}
-           </div>
-         </aside>
-
-
-
-
-
-
-
-     
-        {/* Job Listings */}
-        <main className="md:col-span-3 h-[80vh] overflow-y-auto pr-2">
-          {/* Search Bar */}
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Search by role, skill or location"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full md:w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-
-          {/* Jobs */}
-          <AnimatePresence>
-            {filtered.map((job, idx) => (
-              <motion.div
-                key={job.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className="bg-white p-6 rounded-xl shadow mb-4 hover:shadow-lg transition"
-              >
-                <h2 className="text-xl font-semibold">{job.title}</h2>
-                <p className="text-gray-600 text-sm mt-1">
-                  <strong>Location:</strong> {job.location}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  <strong>Experience:</strong> {job.exp}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {job.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 rounded-full border text-gray-600">
-                      {tag}
-                    </span>
-                  ))}
-
-
-                  
-                </div>
-                <div className="mt-3 flex justify-between">
-                  <button
-                    onClick={() => setSelectedJob(job)}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                  >
-                    View Details
-                  </button>
-
-
-
-                   <motion.div
-      whileHover={{ scale: 1.05, rotate: 1 }}
-      whileTap={{ scale: 0.95, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 300 }}
-    >
-      <Link
-        to="/applyinfo"
-        className="inline-block px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition-colors"
-      >
-        Apply Now
-      </Link>
-    </motion.div>
-    
-
-
-                </div>
-              </motion.div>
+                  className="accent-indigo-600"
+                />
+                <span className="text-gray-700 text-sm">{item.label}</span>
+              </label>
             ))}
-          </AnimatePresence>
+          </div>
+        </div>
+ 
+        {/* Job Listings */}
+        <main className="h-[80vh] overflow-y-auto pr-2">
+          {filtered.length > 0 ? (
+            <AnimatePresence>
+              {filtered.map((job, idx) => (
+                <motion.div
+                  key={job.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3, delay: idx * 0.1 }}
+                  className="bg-white p-6 rounded-xl shadow mb-4 hover:shadow-lg transition"
+                >
+                  <h2 className="text-xl font-semibold">{job.title}</h2>
+                  <p className="text-gray-600 text-sm mt-1">
+                    <strong>Location:</strong> {job.location}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    <strong>Experience:</strong> {job.exp}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {job.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2 py-1 rounded-full border text-gray-600"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+ 
+                  {/* ✅ Updated Buttons Section */}
+                  <div className="mt-3 flex justify-between flex-wrap gap-2">
+                    <button
+                      onClick={() => setSelectedJob(job)}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    >
+                      View Details
+                    </button>
+ 
+                    {/* ✅ New Animated Apply Now Button */}
+                    <motion.div
+                      whileHover={{ scale: 1.05, rotate: 1 }}
+                      whileTap={{ scale: 0.95, rotate: 0 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <Link 
+                        to="/applyinfo"
+                        className="inline-block px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition-colors"
+                      >
+                        Apply Now
+                      </Link>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          ) : (
+            <p className="text-gray-600">No jobs found for your filters.</p>
+          )}
         </main>
       </div>
-
+ 
       {/* Job Detail Modal */}
       <AnimatePresence>
         {selectedJob && (
@@ -305,12 +297,9 @@ export default function Careers() {
             </motion.div>
           </motion.div>
         )}
-      
       </AnimatePresence>
-  </div>
+    </div>
   );
 }
-
-
-
+ 
  
